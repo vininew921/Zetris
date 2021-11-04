@@ -8,7 +8,6 @@ namespace Assets.Scripts
         public int[][] Positions;
         public int Rows;
         public int Columns;
-        string formatedMatrix;
 
         public Tetrominoe currentPiece;
 
@@ -35,8 +34,6 @@ namespace Assets.Scripts
         {
             currentPiece.Y++;
 
-            formatedMatrix = FormatMatrix();
-
             if (!ValidPosition())
             {
                 currentPiece.Y--;
@@ -44,6 +41,38 @@ namespace Assets.Scripts
                 int randomIndex = Random.Range(0, 7);
                 currentPiece = Tetrominoe.GetTetrominoe(randomIndex);
             }
+        }
+
+        public void Move(int x, int y)
+        {
+            currentPiece.X += x;
+            currentPiece.Y += y;
+
+            if (!ValidPosition())
+            {
+                currentPiece.X -= x;
+                currentPiece.Y -= y;
+
+                if (!currentPiece.Active)
+                {
+                    FreezeBoard();
+                    int randomIndex = Random.Range(0, 7);
+                    currentPiece = Tetrominoe.GetTetrominoe(randomIndex);
+                }
+            }
+        }
+
+        public void HardDrop()
+        {
+            while (ValidPosition())
+            {
+                currentPiece.Y++;
+            }
+
+            currentPiece.Y--;
+            FreezeBoard();
+            int randomIndex = Random.Range(0, 7);
+            currentPiece = Tetrominoe.GetTetrominoe(randomIndex);
         }
 
         private void FreezeBoard()
@@ -68,8 +97,14 @@ namespace Assets.Scripts
                 {
                     if (currentPiece.Shape[y][x] != 0)
                     {
+                        if(x + currentPiece.X < 0 || x + currentPiece.X >= Columns)
+                        {
+                            return false;
+                        }
+
                         if (y + currentPiece.Y >= Rows || Positions[y + currentPiece.Y][x + currentPiece.X] != 0)
                         {
+                            currentPiece.Active = false;
                             return false;
                         }
                     }
@@ -77,24 +112,6 @@ namespace Assets.Scripts
             }
 
             return true;
-        }
-
-        private string FormatMatrix(int pad = 10)
-        {
-            string result = "";
-
-            for (int y = 0; y < Rows; y++)
-            {
-                for (int x = 0; x < Columns; x++)
-                {
-                    int currentSquare = Positions[y][x];
-                    result += currentSquare.ToString().PadLeft(pad);
-                }
-
-                result += "\n";
-            }
-
-            return result;
         }
     }
 }

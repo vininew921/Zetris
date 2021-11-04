@@ -5,7 +5,7 @@ public class TetrisController : MonoBehaviour
 {
     public Board board;
 
-    private const int UPDATE_INTERVAL = 8;
+    private const int UPDATE_INTERVAL = 20;
     private int currentUpdateFrame = 0;
 
     private void Start()
@@ -13,11 +13,37 @@ public class TetrisController : MonoBehaviour
         board = new Board(20, 10);
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            board.HardDrop();
+        }
+    }
+
     private void FixedUpdate()
     {
         if (currentUpdateFrame == 0)
         {
             board.Update();
+        }
+
+        if(currentUpdateFrame % 2 == 0)
+        {
+            if (Input.GetKey(KeyCode.LeftArrow))
+            {
+                board.Move(-1, 0);
+            }
+
+            if (Input.GetKey(KeyCode.RightArrow))
+            {
+                board.Move(1, 0);
+            }
+
+            if (Input.GetKey(KeyCode.DownArrow))
+            {
+                board.Move(0, 1);
+            }
         }
 
         currentUpdateFrame++;
