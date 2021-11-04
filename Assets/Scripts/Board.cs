@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using UnityEngine.Networking.Types;
 
 namespace Assets.Scripts
@@ -75,6 +76,58 @@ namespace Assets.Scripts
             currentPiece = Tetrominoe.GetTetrominoe(randomIndex);
         }
 
+        public void Rotate(bool clockWise)
+        {
+            int[][] newShape = new int[currentPiece.Shape.Length][];
+
+            if (clockWise)
+            {
+                //Transpose
+                for (int y = 0; y < currentPiece.Shape.Length; y++)
+                {
+                    newShape[y] = new int[currentPiece.Shape[y].Length];
+                    for (int x = 0; x < currentPiece.Shape[y].Length; x++)
+                    {
+                        newShape[y][x] = currentPiece.Shape[x][y];
+                    }
+                }
+
+                //Reverse rows
+                for (int y = 0; y < currentPiece.Shape.Length; y++)
+                {
+                    newShape[y] = newShape[y].Reverse().ToArray();
+                }
+            }
+            else
+            {
+                int[][] reversed = new int[currentPiece.Shape.Length][];
+
+                //Reverse rows
+                for (int y = 0; y < currentPiece.Shape.Length; y++)
+                {
+                    reversed[y] = currentPiece.Shape[y].Reverse().ToArray();
+                }
+
+                //Transpose
+                for (int y = 0; y < currentPiece.Shape.Length; y++)
+                {
+                    newShape[y] = new int[currentPiece.Shape[y].Length];
+                    for (int x = 0; x < currentPiece.Shape[y].Length; x++)
+                    {
+                        newShape[y][x] = reversed[x][y];
+                    }
+                }
+            }
+
+            int[][] oldShape = currentPiece.Shape;
+            currentPiece.Shape = newShape;
+
+            if (!ValidPosition())
+            {
+                currentPiece.Shape = oldShape;
+            }
+        }
+
         private void FreezeBoard()
         {
             for (int y = 0; y < currentPiece.Shape.Length; y++)
@@ -97,7 +150,7 @@ namespace Assets.Scripts
                 {
                     if (currentPiece.Shape[y][x] != 0)
                     {
-                        if(x + currentPiece.X < 0 || x + currentPiece.X >= Columns)
+                        if (x + currentPiece.X < 0 || x + currentPiece.X >= Columns)
                         {
                             return false;
                         }

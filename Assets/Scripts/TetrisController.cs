@@ -19,6 +19,16 @@ public class TetrisController : MonoBehaviour
         {
             board.HardDrop();
         }
+
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            board.Rotate(false);
+        }
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            board.Rotate(true);
+        }
     }
 
     private void FixedUpdate()
