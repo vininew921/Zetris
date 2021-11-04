@@ -38,10 +38,56 @@ namespace Assets.Scripts
             if (!ValidPosition())
             {
                 currentPiece.Y--;
-                FreezeBoard();
-                int randomIndex = Random.Range(0, 7);
-                currentPiece = Tetrominoe.GetTetrominoe(randomIndex);
+                GenerateNextPiece();
             }
+        }
+
+        public void GenerateNextPiece()
+        {
+            FreezeBoard();
+            int randomIndex = Random.Range(0, 7);
+            currentPiece = Tetrominoe.GetTetrominoe(randomIndex);
+
+            ClearLines();
+        }
+
+        public int ClearLines()
+        {
+            int clearedLines = 0;
+
+            for (int y = 0; y < Rows; y++)
+            {
+                bool clear = true;
+                for (int x = 0; x < Columns; x++)
+                {
+                    if(Positions[y][x] == 0)
+                    {
+                        clear = false;
+                        break;
+                    }
+                }
+
+                if (clear)
+                {
+                    clearedLines++;
+                    for(int clearY = y; clearY >= 0; clearY--)
+                    {
+                        for (int x = 0; x < Columns; x++)
+                        {
+                            if(clearY == 0)
+                            {
+                                Positions[0][x] = 0;
+                            }
+                            else
+                            {
+                                Positions[clearY][x] = Positions[clearY - 1][x];
+                            }
+                        }
+                    }
+                }
+            }
+
+            return clearedLines;
         }
 
         public void Move(int x, int y)
@@ -56,9 +102,7 @@ namespace Assets.Scripts
 
                 if (!currentPiece.Active)
                 {
-                    FreezeBoard();
-                    int randomIndex = Random.Range(0, 7);
-                    currentPiece = Tetrominoe.GetTetrominoe(randomIndex);
+                    GenerateNextPiece();
                 }
             }
         }
@@ -71,9 +115,7 @@ namespace Assets.Scripts
             }
 
             currentPiece.Y--;
-            FreezeBoard();
-            int randomIndex = Random.Range(0, 7);
-            currentPiece = Tetrominoe.GetTetrominoe(randomIndex);
+            GenerateNextPiece();
         }
 
         public void Rotate(bool clockWise)

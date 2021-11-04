@@ -25,7 +25,7 @@ public class TetrisController : MonoBehaviour
             board.Rotate(false);
         }
 
-        if (Input.GetKeyDown(KeyCode.X))
+        if (Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.UpArrow))
         {
             board.Rotate(true);
         }
@@ -38,7 +38,7 @@ public class TetrisController : MonoBehaviour
             board.Update();
         }
 
-        if(currentUpdateFrame % 2 == 0)
+        if(currentUpdateFrame % 4 == 0)
         {
             if (Input.GetKey(KeyCode.LeftArrow))
             {
