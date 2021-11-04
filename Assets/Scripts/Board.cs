@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using UnityEngine;
-using UnityEngine.Networking.Types;
 
 namespace Assets.Scripts
 {
@@ -9,13 +8,31 @@ namespace Assets.Scripts
         public int[][] Positions;
         public int Rows;
         public int Columns;
+        public int Points;
 
         public Tetrominoe currentPiece;
+
+        public bool Lost;
+        public bool ClearedLines;
+        public bool PieceLocked;
+
+        private int[] pointTable =
+        {
+            40,
+            100,
+            300,
+            1200
+        };
 
         public Board(int rows, int columns)
         {
             Rows = rows;
             Columns = columns;
+            Points = 0;
+
+            Lost = false;
+            ClearedLines = false;
+            PieceLocked = false;
 
             Positions = new int[rows][];
             for (int y = 0; y < rows; y++)
@@ -45,10 +62,21 @@ namespace Assets.Scripts
         public void GenerateNextPiece()
         {
             FreezeBoard();
+            PieceLocked = true;
             int randomIndex = Random.Range(0, 7);
             currentPiece = Tetrominoe.GetTetrominoe(randomIndex);
 
-            ClearLines();
+            int clearedLines = ClearLines();
+            if(clearedLines > 0)
+            {
+                Points += pointTable[clearedLines - 1];
+                ClearedLines = true;
+            }
+
+            if (!ValidPosition())
+            {
+                Lost = true;
+            }
         }
 
         public int ClearLines()
