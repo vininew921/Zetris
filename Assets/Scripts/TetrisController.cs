@@ -1,6 +1,7 @@
 using Assets.Scripts;
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TetrisController : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class TetrisController : MonoBehaviour
     public AudioSource theme;
     public AudioSource lineClear;
     public AudioSource pieceLocked;
+    public Text pointsText;
+    public Text levelsText;
 
     private int updateInterval = 20;
     private int currentUpdateFrame = 0;
@@ -51,8 +54,8 @@ public class TetrisController : MonoBehaviour
     {
         board = new Board(20, 10);
         updateInterval = levelTable[board.Level];
-        Debug.Log("Level: " + board.Level);
-        Debug.Log("Points: " + board.Points);
+        levelsText.text = "Levels: " + board.Level.ToString();
+        pointsText.text = "Points: " + board.Points.ToString();
         theme.Play();
     }
 
@@ -105,8 +108,8 @@ public class TetrisController : MonoBehaviour
                 board.ClearedLines = false;
                 updateInterval = levelTable[Math.Min(board.Level, 29)];
                 currentUpdateFrame = 0;
-                Debug.Log("Level: " + board.Level);
-                Debug.Log("Points: " + board.Points);
+                levelsText.text = "Levels: " + board.Level.ToString();
+                pointsText.text = "Points: " + board.Points.ToString();
             }
             else if (board.PieceLocked)
             {
