@@ -66,13 +66,12 @@ public class GLBehaviour : MonoBehaviour
 
     private void DrawSquare(int x, int y, int squareType)
     {
-        Vector3 bottomLeft = new Vector3(x, y) + drawOffset;
-        Vector3 topLeft = bottomLeft + Vector3.up;
-        Vector3 topRight = topLeft + Vector3.right;
-        Vector3 bottomRight = topRight + Vector3.down;
-
         GL.Color(colors[squareType]);
 
+        Vector3 bottomLeft = new Vector3(x, y) + (0.95f * drawOffset);
+        Vector3 topLeft = bottomLeft + (0.95f * Vector3.up);
+        Vector3 topRight = topLeft + (0.95f * Vector3.right);
+        Vector3 bottomRight = topRight + (0.95f * Vector3.down);
         GL.Vertex(bottomLeft * squareScale);
         GL.Vertex(topLeft * squareScale);
         GL.Vertex(topRight * squareScale);

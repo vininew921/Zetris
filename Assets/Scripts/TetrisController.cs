@@ -35,8 +35,6 @@ public class TetrisController : MonoBehaviour
             {
                 board.Rotate(true);
             }
-
-            
         }
     }
 
