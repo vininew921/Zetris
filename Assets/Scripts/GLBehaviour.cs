@@ -68,10 +68,10 @@ public class GLBehaviour : MonoBehaviour
     {
         GL.Color(colors[squareType]);
 
-        Vector3 bottomLeft = new Vector3(x, y) + (0.95f * drawOffset);
-        Vector3 topLeft = bottomLeft + (0.95f * Vector3.up);
-        Vector3 topRight = topLeft + (0.95f * Vector3.right);
-        Vector3 bottomRight = topRight + (0.95f * Vector3.down);
+        Vector3 bottomLeft = new Vector3(x, y) + (0.9f * drawOffset);
+        Vector3 topLeft = bottomLeft + (0.9f * Vector3.up);
+        Vector3 topRight = topLeft + (0.9f * Vector3.right);
+        Vector3 bottomRight = topRight + (0.9f * Vector3.down);
         GL.Vertex(bottomLeft * squareScale);
         GL.Vertex(topLeft * squareScale);
         GL.Vertex(topRight * squareScale);

@@ -1,4 +1,5 @@
 using Assets.Scripts;
+using System;
 using UnityEngine;
 
 public class TetrisController : MonoBehaviour
@@ -8,12 +9,50 @@ public class TetrisController : MonoBehaviour
     public AudioSource lineClear;
     public AudioSource pieceLocked;
 
-    private const int UPDATE_INTERVAL = 20;
+    private int updateInterval = 20;
     private int currentUpdateFrame = 0;
+
+    private readonly int[] levelTable =
+    {
+        //Frames per level
+        48, //Level - 0
+        43, //Level - 1
+        38, //Level - 2
+        33, //Level - 3
+        28, //Level - 4
+        23, //Level - 5
+        18, //Level - 6
+        13, //Level - 7
+        8, //Level - 8
+        6, //Level - 9
+        5, //Level - 10
+        5, //Level - 11
+        5, //Level - 12
+        4, //Level - 13
+        4, //Level - 14
+        4, //Level - 15
+        3, //Level - 16
+        3, //Level - 17
+        3, //Level - 18
+        2, //Level - 19
+        2, //Level - 20
+        2, //Level - 21
+        2, //Level - 22
+        2, //Level - 23
+        2, //Level - 24
+        2, //Level - 25
+        2, //Level - 26
+        2, //Level - 27
+        2, //Level - 28
+        1 //Level - 29+
+    };
 
     private void Start()
     {
         board = new Board(20, 10);
+        updateInterval = levelTable[board.Level];
+        Debug.Log("Level: " + board.Level);
+        Debug.Log("Points: " + board.Points);
         theme.Play();
     }
 
@@ -64,7 +103,10 @@ public class TetrisController : MonoBehaviour
             {
                 lineClear.Play();
                 board.ClearedLines = false;
-                Debug.Log(board.Points);
+                updateInterval = levelTable[Math.Min(board.Level, 29)];
+                currentUpdateFrame = 0;
+                Debug.Log("Level: " + board.Level);
+                Debug.Log("Points: " + board.Points);
             }
             else if (board.PieceLocked)
             {
@@ -79,7 +121,7 @@ public class TetrisController : MonoBehaviour
 
             currentUpdateFrame++;
 
-            if (currentUpdateFrame == UPDATE_INTERVAL)
+            if (currentUpdateFrame == updateInterval)
             {
                 currentUpdateFrame = 0;
             }

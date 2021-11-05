@@ -9,6 +9,7 @@ namespace Assets.Scripts
         public int Rows;
         public int Columns;
         public int Points;
+        public int Level;
 
         public Tetrominoe currentPiece;
 
@@ -16,7 +17,9 @@ namespace Assets.Scripts
         public bool ClearedLines;
         public bool PieceLocked;
 
-        private int[] pointTable =
+        private int totalClearedLines;
+
+        private readonly int[] pointTable =
         {
             40,
             100,
@@ -29,10 +32,13 @@ namespace Assets.Scripts
             Rows = rows;
             Columns = columns;
             Points = 0;
+            Level = 0;
 
             Lost = false;
             ClearedLines = false;
             PieceLocked = false;
+
+            totalClearedLines = 0;
 
             Positions = new int[rows][];
             for (int y = 0; y < rows; y++)
@@ -69,8 +75,11 @@ namespace Assets.Scripts
             int clearedLines = ClearLines();
             if(clearedLines > 0)
             {
+                totalClearedLines += clearedLines;
                 Points += pointTable[clearedLines - 1];
                 ClearedLines = true;
+
+                Level = totalClearedLines / 10;
             }
 
             if (!ValidPosition())

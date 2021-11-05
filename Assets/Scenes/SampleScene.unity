@@ -168,7 +168,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   drawMaterial: {fileID: 2100000, guid: 31e17fd5d33ab524fb10b7d3725e9124, type: 2}
   tetrisController: {fileID: 519420033}
-  drawOffset: {x: -5, y: -11.5, z: 0}
+  drawOffset: {x: -5, y: -12.2, z: 0}
   squareScale: 0.49
 --- !u!20 &519420031
 Camera:
@@ -180,7 +180,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.16037738, g: 0.14902993, b: 0.14902993, a: 1}
+  m_BackGroundColor: {r: 0.38937345, g: 0.6247037, b: 0.6603774, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
