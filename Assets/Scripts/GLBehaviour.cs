@@ -33,7 +33,8 @@ public class GLBehaviour : MonoBehaviour
             for(int x = 0; x < tetrisController.board.Columns; x++)
             {
                 int currentSquare = tetrisController.board.Positions[y][x];
-                DrawSquare(x, tetrisController.board.Rows - y, currentSquare);
+                GL.Color(colors[currentSquare]);
+                DrawSquare(x, tetrisController.board.Rows - y);
             }
         }
 
@@ -45,7 +46,22 @@ public class GLBehaviour : MonoBehaviour
             {
                 if (currentPiece.Shape[y][x] != 0)
                 {
-                    DrawSquare(x + currentPiece.X, tetrisController.board.Rows - currentPiece.Y - y, currentPiece.Shape[y][x]);
+                    GL.Color(colors[currentPiece.Shape[y][x]]);
+                    DrawSquare(x + currentPiece.X, tetrisController.board.Rows - currentPiece.Y - y);
+                }
+            }
+        }
+
+        Tetrominoe phantomPiece = tetrisController.board.phantomPiece;
+
+        for (int y = 0; y < phantomPiece.Shape.Length; y++)
+        {
+            for (int x = 0; x < phantomPiece.Shape[y].Length; x++)
+            {
+                if (phantomPiece.Shape[y][x] != 0)
+                {
+                    GL.Color(Color.gray);
+                    DrawSquare(x + phantomPiece.X, tetrisController.board.Rows - phantomPiece.Y - y);
                 }
             }
         }
@@ -64,9 +80,8 @@ public class GLBehaviour : MonoBehaviour
         GL.PopMatrix();
     }
 
-    private void DrawSquare(int x, int y, int squareType)
+    private void DrawSquare(int x, int y)
     {
-        GL.Color(colors[squareType]);
 
         Vector3 bottomLeft = new Vector3(x, y) + (0.9f * drawOffset);
         Vector3 topLeft = bottomLeft + (0.9f * Vector3.up);

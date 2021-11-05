@@ -12,6 +12,7 @@ namespace Assets.Scripts
         public int Level;
 
         public Tetrominoe currentPiece;
+        public Tetrominoe phantomPiece;
 
         public bool Lost;
         public bool ClearedLines;
@@ -52,13 +53,15 @@ namespace Assets.Scripts
 
             int randomIndex = Random.Range(0, 7);
             currentPiece = Tetrominoe.GetTetrominoe(randomIndex);
+            phantomPiece = Tetrominoe.GetTetrominoe(randomIndex);
+            SetPhantomPiece();
         }
 
         public void Update()
         {
             currentPiece.Y++;
 
-            if (!ValidPosition())
+            if (!ValidPosition(currentPiece))
             {
                 currentPiece.Y--;
                 GenerateNextPiece();
@@ -71,6 +74,8 @@ namespace Assets.Scripts
             PieceLocked = true;
             int randomIndex = Random.Range(0, 7);
             currentPiece = Tetrominoe.GetTetrominoe(randomIndex);
+            phantomPiece = Tetrominoe.GetTetrominoe(randomIndex);
+            SetPhantomPiece();
 
             int clearedLines = ClearLines();
             if(clearedLines > 0)
@@ -82,7 +87,7 @@ namespace Assets.Scripts
                 Level = totalClearedLines / 10;
             }
 
-            if (!ValidPosition())
+            if (!ValidPosition(currentPiece))
             {
                 Lost = true;
             }
@@ -132,7 +137,7 @@ namespace Assets.Scripts
             currentPiece.X += x;
             currentPiece.Y += y;
 
-            if (!ValidPosition())
+            if (!ValidPosition(currentPiece))
             {
                 currentPiece.X -= x;
                 currentPiece.Y -= y;
@@ -142,11 +147,13 @@ namespace Assets.Scripts
                     GenerateNextPiece();
                 }
             }
+
+            SetPhantomPiece();
         }
 
         public void HardDrop()
         {
-            while (ValidPosition())
+            while (ValidPosition(currentPiece))
             {
                 currentPiece.Y++;
             }
@@ -155,55 +162,79 @@ namespace Assets.Scripts
             GenerateNextPiece();
         }
 
+        public void SetPhantomPiece()
+        {
+            phantomPiece.X = currentPiece.X;
+            phantomPiece.Y = currentPiece.Y;
+
+            while (ValidPosition(phantomPiece))
+            {
+                phantomPiece.Y++;
+            }
+
+            phantomPiece.Y--;
+            phantomPiece.X = currentPiece.X;
+        }
+
         public void Rotate(bool clockWise)
         {
-            int[][] newShape = new int[currentPiece.Shape.Length][];
+            RotatePiece(currentPiece, clockWise);
+
+            phantomPiece.X = currentPiece.X;
+            phantomPiece.Y = currentPiece.Y;
+            RotatePiece(phantomPiece, clockWise);
+            SetPhantomPiece();
+        }
+
+        private void RotatePiece(Tetrominoe piece, bool clockWise)
+        {
+            int[][] newShape = new int[piece.Shape.Length][];
 
             if (clockWise)
             {
                 //Transpose
-                for (int y = 0; y < currentPiece.Shape.Length; y++)
+                for (int y = 0; y < piece.Shape.Length; y++)
                 {
-                    newShape[y] = new int[currentPiece.Shape[y].Length];
-                    for (int x = 0; x < currentPiece.Shape[y].Length; x++)
+                    newShape[y] = new int[piece.Shape[y].Length];
+                    for (int x = 0; x < piece.Shape[y].Length; x++)
                     {
-                        newShape[y][x] = currentPiece.Shape[x][y];
+                        newShape[y][x] = piece.Shape[x][y];
                     }
                 }
 
                 //Reverse rows
-                for (int y = 0; y < currentPiece.Shape.Length; y++)
+                for (int y = 0; y < piece.Shape.Length; y++)
                 {
                     newShape[y] = newShape[y].Reverse().ToArray();
                 }
             }
             else
             {
-                int[][] reversed = new int[currentPiece.Shape.Length][];
+                int[][] reversed = new int[piece.Shape.Length][];
 
                 //Reverse rows
-                for (int y = 0; y < currentPiece.Shape.Length; y++)
+                for (int y = 0; y < piece.Shape.Length; y++)
                 {
-                    reversed[y] = currentPiece.Shape[y].Reverse().ToArray();
+                    reversed[y] = piece.Shape[y].Reverse().ToArray();
                 }
 
                 //Transpose
-                for (int y = 0; y < currentPiece.Shape.Length; y++)
+                for (int y = 0; y < piece.Shape.Length; y++)
                 {
-                    newShape[y] = new int[currentPiece.Shape[y].Length];
-                    for (int x = 0; x < currentPiece.Shape[y].Length; x++)
+                    newShape[y] = new int[piece.Shape[y].Length];
+                    for (int x = 0; x < piece.Shape[y].Length; x++)
                     {
                         newShape[y][x] = reversed[x][y];
                     }
                 }
             }
 
-            int[][] oldShape = currentPiece.Shape;
-            currentPiece.Shape = newShape;
+            int[][] oldShape = piece.Shape;
+            piece.Shape = newShape;
 
-            if (!ValidPosition())
+            if (!ValidPosition(piece))
             {
-                currentPiece.Shape = oldShape;
+                piece.Shape = oldShape;
             }
         }
 
@@ -221,22 +252,22 @@ namespace Assets.Scripts
             }
         }
 
-        private bool ValidPosition()
+        private bool ValidPosition(Tetrominoe piece)
         {
-            for (int y = 0; y < currentPiece.Shape.Length; y++)
+            for (int y = 0; y < piece.Shape.Length; y++)
             {
-                for (int x = 0; x < currentPiece.Shape[y].Length; x++)
+                for (int x = 0; x < piece.Shape[y].Length; x++)
                 {
-                    if (currentPiece.Shape[y][x] != 0)
+                    if (piece.Shape[y][x] != 0)
                     {
-                        if (x + currentPiece.X < 0 || x + currentPiece.X >= Columns)
+                        if (x + piece.X < 0 || x + piece.X >= Columns)
                         {
                             return false;
                         }
 
-                        if (y + currentPiece.Y >= Rows || Positions[y + currentPiece.Y][x + currentPiece.X] != 0)
+                        if (y + piece.Y >= Rows || Positions[y + piece.Y][x + piece.X] != 0)
                         {
-                            currentPiece.Active = false;
+                            piece.Active = false;
                             return false;
                         }
                     }
