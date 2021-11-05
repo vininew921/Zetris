@@ -38,20 +38,6 @@ public class GLBehaviour : MonoBehaviour
             }
         }
 
-        Tetrominoe currentPiece = tetrisController.board.currentPiece;
-
-        for (int y = 0; y < currentPiece.Shape.Length; y++)
-        {
-            for (int x = 0; x < currentPiece.Shape[y].Length; x++)
-            {
-                if (currentPiece.Shape[y][x] != 0)
-                {
-                    GL.Color(colors[currentPiece.Shape[y][x]]);
-                    DrawSquare(x + currentPiece.X, tetrisController.board.Rows - currentPiece.Y - y);
-                }
-            }
-        }
-
         Tetrominoe phantomPiece = tetrisController.board.phantomPiece;
 
         for (int y = 0; y < phantomPiece.Shape.Length; y++)
@@ -62,6 +48,20 @@ public class GLBehaviour : MonoBehaviour
                 {
                     GL.Color(Color.gray);
                     DrawSquare(x + phantomPiece.X, tetrisController.board.Rows - phantomPiece.Y - y);
+                }
+            }
+        }
+
+        Tetrominoe currentPiece = tetrisController.board.currentPiece;
+
+        for (int y = 0; y < currentPiece.Shape.Length; y++)
+        {
+            for (int x = 0; x < currentPiece.Shape[y].Length; x++)
+            {
+                if (currentPiece.Shape[y][x] != 0)
+                {
+                    GL.Color(colors[currentPiece.Shape[y][x]]);
+                    DrawSquare(x + currentPiece.X, tetrisController.board.Rows - currentPiece.Y - y);
                 }
             }
         }
