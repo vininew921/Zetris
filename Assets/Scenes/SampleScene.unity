@@ -348,6 +348,7 @@ MonoBehaviour:
   drawMaterial: {fileID: 2100000, guid: 31e17fd5d33ab524fb10b7d3725e9124, type: 2}
   tetrisController: {fileID: 519420033}
   drawOffset: {x: -5, y: -12.2, z: 0}
+  nextPiecePosition: {x: 12, y: 0, z: 0}
   squareScale: 0.49
 --- !u!20 &519420031
 Camera:

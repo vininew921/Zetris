@@ -26,28 +26,28 @@ public class TetrisController : MonoBehaviour
         23, //Level - 5
         18, //Level - 6
         13, //Level - 7
-        8, //Level - 8
-        6, //Level - 9
-        5, //Level - 10
-        5, //Level - 11
-        5, //Level - 12
-        4, //Level - 13
-        4, //Level - 14
-        4, //Level - 15
-        3, //Level - 16
-        3, //Level - 17
-        3, //Level - 18
-        2, //Level - 19
-        2, //Level - 20
-        2, //Level - 21
-        2, //Level - 22
-        2, //Level - 23
-        2, //Level - 24
-        2, //Level - 25
-        2, //Level - 26
-        2, //Level - 27
-        2, //Level - 28
-        1 //Level - 29+
+        8,  //Level - 8
+        6,  //Level - 9
+        5,  //Level - 10
+        5,  //Level - 11
+        5,  //Level - 12
+        4,  //Level - 13
+        4,  //Level - 14
+        4,  //Level - 15
+        3,  //Level - 16
+        3,  //Level - 17
+        3,  //Level - 18
+        2,  //Level - 19
+        2,  //Level - 20
+        2,  //Level - 21
+        2,  //Level - 22
+        2,  //Level - 23
+        2,  //Level - 24
+        2,  //Level - 25
+        2,  //Level - 26
+        2,  //Level - 27
+        2,  //Level - 28
+        1   //Level - 29+
     };
 
     private void Start()

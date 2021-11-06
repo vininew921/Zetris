@@ -6,6 +6,7 @@ public class GLBehaviour : MonoBehaviour
     public Material drawMaterial;
     public TetrisController tetrisController;
     public Vector3 drawOffset;
+    public Vector3 nextPiecePosition;
     public float squareScale = 0.5f;
 
     private Color[] colors;
@@ -66,6 +67,20 @@ public class GLBehaviour : MonoBehaviour
             }
         }
 
+        Tetrominoe nextPiece = tetrisController.board.nextPiece;
+
+        for (int y = 0; y < nextPiece.Shape.Length; y++)
+        {
+            for (int x = 0; x < nextPiece.Shape[y].Length; x++)
+            {
+                if (nextPiece.Shape[y][x] != 0)
+                {
+                    GL.Color(colors[nextPiece.Shape[y][x]]);
+                    DrawSquare(x + (int)nextPiecePosition.x, tetrisController.board.Rows - (int)nextPiecePosition.y - y);
+                }
+            }
+        }
+
         GL.End();
     }
 
@@ -82,7 +97,6 @@ public class GLBehaviour : MonoBehaviour
 
     private void DrawSquare(int x, int y)
     {
-
         Vector3 bottomLeft = new Vector3(x, y) + (0.9f * drawOffset);
         Vector3 topLeft = bottomLeft + (0.9f * Vector3.up);
         Vector3 topRight = topLeft + (0.9f * Vector3.right);

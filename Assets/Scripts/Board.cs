@@ -1,5 +1,6 @@
-﻿using System.Linq;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Random = System.Random;
 
 namespace Assets.Scripts
 {
@@ -13,6 +14,11 @@ namespace Assets.Scripts
 
         public Tetrominoe currentPiece;
         public Tetrominoe phantomPiece;
+        public Tetrominoe nextPiece;
+
+        private Queue<int> pieceQueue;
+
+        private Random random;
 
         public bool Lost;
         public bool ClearedLines;
@@ -35,6 +41,11 @@ namespace Assets.Scripts
             Points = 0;
             Level = 0;
 
+            pieceQueue = new Queue<int>();
+            random = new Random();
+
+            GeneratePieceQueue();
+
             Lost = false;
             ClearedLines = false;
             PieceLocked = false;
@@ -51,9 +62,13 @@ namespace Assets.Scripts
                 }
             }
 
-            int randomIndex = Random.Range(0, 7);
-            currentPiece = Tetrominoe.GetTetrominoe(randomIndex);
-            phantomPiece = Tetrominoe.GetTetrominoe(randomIndex);
+            int currentPieceIndex = pieceQueue.Dequeue();
+            int nextPieceIndex = pieceQueue.Peek();
+
+            currentPiece = Tetrominoe.GetTetrominoe(currentPieceIndex);
+            phantomPiece = Tetrominoe.GetTetrominoe(currentPieceIndex);
+            nextPiece = Tetrominoe.GetTetrominoe(nextPieceIndex);
+
             SetPhantomPiece();
         }
 
@@ -66,70 +81,6 @@ namespace Assets.Scripts
                 currentPiece.Y--;
                 GenerateNextPiece();
             }
-        }
-
-        public void GenerateNextPiece()
-        {
-            FreezeBoard();
-            PieceLocked = true;
-            int randomIndex = Random.Range(0, 7);
-            currentPiece = Tetrominoe.GetTetrominoe(randomIndex);
-            phantomPiece = Tetrominoe.GetTetrominoe(randomIndex);
-            SetPhantomPiece();
-
-            int clearedLines = ClearLines();
-            if(clearedLines > 0)
-            {
-                totalClearedLines += clearedLines;
-                Points += pointTable[clearedLines - 1];
-                ClearedLines = true;
-
-                Level = totalClearedLines / 10;
-            }
-
-            if (!ValidPosition(currentPiece))
-            {
-                Lost = true;
-            }
-        }
-
-        public int ClearLines()
-        {
-            int clearedLines = 0;
-
-            for (int y = 0; y < Rows; y++)
-            {
-                bool clear = true;
-                for (int x = 0; x < Columns; x++)
-                {
-                    if(Positions[y][x] == 0)
-                    {
-                        clear = false;
-                        break;
-                    }
-                }
-
-                if (clear)
-                {
-                    clearedLines++;
-                    for(int clearY = y; clearY >= 0; clearY--)
-                    {
-                        for (int x = 0; x < Columns; x++)
-                        {
-                            if(clearY == 0)
-                            {
-                                Positions[0][x] = 0;
-                            }
-                            else
-                            {
-                                Positions[clearY][x] = Positions[clearY - 1][x];
-                            }
-                        }
-                    }
-                }
-            }
-
-            return clearedLines;
         }
 
         public void Move(int x, int y)
@@ -162,7 +113,28 @@ namespace Assets.Scripts
             GenerateNextPiece();
         }
 
-        public void SetPhantomPiece()
+        public void Rotate(bool clockWise)
+        {
+            RotatePiece(currentPiece, clockWise);
+
+            phantomPiece.X = currentPiece.X;
+            phantomPiece.Y = currentPiece.Y;
+            RotatePiece(phantomPiece, clockWise);
+            SetPhantomPiece();
+        }
+
+        private void GeneratePieceQueue()
+        {
+            int[] values = { 0, 1, 2, 3, 4, 5, 6 };
+            int[] randomValues = values.OrderBy(x => random.Next()).ToArray();
+
+            for(int i = 0; i < randomValues.Length; i++)
+            {
+                pieceQueue.Enqueue(randomValues[i]);
+            }
+        }
+
+        private void SetPhantomPiece()
         {
             phantomPiece.X = currentPiece.X;
             phantomPiece.Y = currentPiece.Y;
@@ -176,14 +148,80 @@ namespace Assets.Scripts
             phantomPiece.X = currentPiece.X;
         }
 
-        public void Rotate(bool clockWise)
+        private void GenerateNextPiece()
         {
-            RotatePiece(currentPiece, clockWise);
+            FreezeBoard();
+            PieceLocked = true;
 
-            phantomPiece.X = currentPiece.X;
-            phantomPiece.Y = currentPiece.Y;
-            RotatePiece(phantomPiece, clockWise);
+            int currentPieceIndex = pieceQueue.Dequeue();
+
+            currentPiece = Tetrominoe.GetTetrominoe(currentPieceIndex);
+
+            int clearedLines = ClearLines();
+            if (clearedLines > 0)
+            {
+                totalClearedLines += clearedLines;
+                Points += pointTable[clearedLines - 1];
+                ClearedLines = true;
+
+                Level = totalClearedLines / 10;
+            }
+
+            phantomPiece = Tetrominoe.GetTetrominoe(currentPieceIndex);
+
             SetPhantomPiece();
+
+            if (pieceQueue.Count == 0)
+            {
+                GeneratePieceQueue();
+            }
+
+            int nextPieceIndex = pieceQueue.Peek();
+            nextPiece = Tetrominoe.GetTetrominoe(nextPieceIndex);
+
+            if (!ValidPosition(currentPiece))
+            {
+                Lost = true;
+            }
+        }
+
+        private int ClearLines()
+        {
+            int clearedLines = 0;
+
+            for (int y = 0; y < Rows; y++)
+            {
+                bool clear = true;
+                for (int x = 0; x < Columns; x++)
+                {
+                    if (Positions[y][x] == 0)
+                    {
+                        clear = false;
+                        break;
+                    }
+                }
+
+                if (clear)
+                {
+                    clearedLines++;
+                    for (int clearY = y; clearY >= 0; clearY--)
+                    {
+                        for (int x = 0; x < Columns; x++)
+                        {
+                            if (clearY == 0)
+                            {
+                                Positions[0][x] = 0;
+                            }
+                            else
+                            {
+                                Positions[clearY][x] = Positions[clearY - 1][x];
+                            }
+                        }
+                    }
+                }
+            }
+
+            return clearedLines;
         }
 
         private void RotatePiece(Tetrominoe piece, bool clockWise)
