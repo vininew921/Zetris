@@ -108,7 +108,7 @@ public class TetrisController : MonoBehaviour
                 board.ClearedLines = false;
                 updateInterval = levelTable[Math.Min(board.Level, 29)];
                 currentUpdateFrame = 0;
-                levelsText.text = "Levels: " + board.Level.ToString();
+                levelsText.text = "Level: " + board.Level.ToString();
                 pointsText.text = "Points: " + board.Points.ToString();
             }
             else if (board.PieceLocked)
