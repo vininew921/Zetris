@@ -9,6 +9,7 @@ public class GLBehaviour : MonoBehaviour
     public Vector3 nextPiecePosition;
     public float squareScale = 0.5f;
 
+    private bool gameStarted = false;
     private Color[] colors;
 
     private void Start()
@@ -16,13 +17,22 @@ public class GLBehaviour : MonoBehaviour
         colors = new Color[] { Color.black, Color.cyan, Color.yellow, Color.magenta, Color.green, Color.red, Color.blue, new Color(1, 165f / 255f, 0) };
     }
 
+    public void StartGame()
+    {
+        gameStarted = true;
+        tetrisController.StartGame();
+    }
+
     private void OnPostRender()
     {
-        StartOpenGLOperations();
+        if (gameStarted)
+        {
+            StartOpenGLOperations();
 
-        RenderGame();
+            RenderGame();
 
-        EndOpenGLOperations();
+            EndOpenGLOperations();
+        }
     }
 
     private void RenderGame()

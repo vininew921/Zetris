@@ -9,11 +9,14 @@ public class TetrisController : MonoBehaviour
     public AudioSource theme;
     public AudioSource lineClear;
     public AudioSource pieceLocked;
+    public UIController uiController;
     public Text pointsText;
     public Text levelsText;
 
     private int updateInterval = 20;
     private int currentUpdateFrame = 0;
+    private bool lost = false;
+    private bool gameStarted = false;
 
     private readonly int[] levelTable =
     {
@@ -52,16 +55,24 @@ public class TetrisController : MonoBehaviour
 
     private void Start()
     {
+        Setup();
+    }
+
+    public void Setup()
+    {
+        updateInterval = 20;
+        currentUpdateFrame = 0;
         board = new Board(20, 10);
+        lost = false;
+        gameStarted = false;
         updateInterval = levelTable[board.Level];
         levelsText.text = "Level: " + board.Level.ToString();
         pointsText.text = "Points: " + board.Points.ToString();
-        theme.Play();
     }
 
     private void Update()
     {
-        if (!board.Lost)
+        if (!board.Lost && gameStarted)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -87,56 +98,76 @@ public class TetrisController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!board.Lost)
+        if (gameStarted)
         {
-            if (currentUpdateFrame % 3 == 0)
+            if (!board.Lost)
             {
-                if (Input.GetKey(KeyCode.LeftArrow))
+                if (currentUpdateFrame % 3 == 0)
                 {
-                    board.Move(-1, 0);
+                    if (Input.GetKey(KeyCode.LeftArrow))
+                    {
+                        board.Move(-1, 0);
+                    }
+
+                    if (Input.GetKey(KeyCode.RightArrow))
+                    {
+                        board.Move(1, 0);
+                    }
+
+                    if (Input.GetKey(KeyCode.DownArrow))
+                    {
+                        board.Move(0, 1);
+                    }
                 }
 
-                if (Input.GetKey(KeyCode.RightArrow))
+                if (board.ClearedLines)
                 {
-                    board.Move(1, 0);
+                    lineClear.Play();
+                    board.ClearedLines = false;
+                    updateInterval = levelTable[Math.Min(board.Level, 29)];
+                    currentUpdateFrame = 0;
+                    levelsText.text = "Level: " + board.Level.ToString();
+                    pointsText.text = "Points: " + board.Points.ToString();
+                }
+                else if (board.PieceLocked)
+                {
+                    pieceLocked.Play();
+                    board.PieceLocked = false;
                 }
 
-                if (Input.GetKey(KeyCode.DownArrow))
+                if (currentUpdateFrame == 0)
                 {
-                    board.Move(0, 1);
+                    board.Update();
+                }
+
+                currentUpdateFrame++;
+
+                if (currentUpdateFrame == updateInterval)
+                {
+                    currentUpdateFrame = 0;
                 }
             }
-
-            if (board.ClearedLines)
+            else
             {
-                lineClear.Play();
-                board.ClearedLines = false;
-                updateInterval = levelTable[Math.Min(board.Level, 29)];
-                currentUpdateFrame = 0;
-                levelsText.text = "Level: " + board.Level.ToString();
-                pointsText.text = "Points: " + board.Points.ToString();
-            }
-            else if (board.PieceLocked)
-            {
-                pieceLocked.Play();
-                board.PieceLocked = false;
-            }
-
-            if (currentUpdateFrame == 0)
-            {
-                board.Update();
-            }
-
-            currentUpdateFrame++;
-
-            if (currentUpdateFrame == updateInterval)
-            {
-                currentUpdateFrame = 0;
+                theme.Stop();
+                Lost();
             }
         }
-        else
+    }
+
+    private void Lost()
+    {
+        if (!lost)
         {
-            theme.Pause();
+            uiController.ShowLeaderboards(board.Points, board.Level);
+            lost = true;
         }
+    }
+
+    public void StartGame()
+    {
+        gameStarted = true;
+        uiController.StartGame();
+        theme.Play();
     }
 }
