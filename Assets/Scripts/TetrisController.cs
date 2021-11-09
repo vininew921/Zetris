@@ -54,7 +54,7 @@ public class TetrisController : MonoBehaviour
     {
         board = new Board(20, 10);
         updateInterval = levelTable[board.Level];
-        levelsText.text = "Levels: " + board.Level.ToString();
+        levelsText.text = "Level: " + board.Level.ToString();
         pointsText.text = "Points: " + board.Points.ToString();
         theme.Play();
     }
