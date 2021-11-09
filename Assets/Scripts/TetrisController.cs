@@ -77,6 +77,11 @@ public class TetrisController : MonoBehaviour
             {
                 board.Rotate(true);
             }
+
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                board.SwitchPiece();
+            }
         }
     }
 

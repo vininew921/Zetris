@@ -15,16 +15,16 @@ namespace Assets.Scripts
         public Tetrominoe currentPiece;
         public Tetrominoe phantomPiece;
         public Tetrominoe nextPiece;
-
-        private Queue<int> pieceQueue;
-
-        private Random random;
+        public Tetrominoe switchPiece;
 
         public bool Lost;
         public bool ClearedLines;
         public bool PieceLocked;
 
+        private Random random;
+        private Queue<int> pieceQueue;
         private int totalClearedLines;
+        private bool canSwitch;
 
         private readonly int[] pointTable =
         {
@@ -43,6 +43,7 @@ namespace Assets.Scripts
 
             pieceQueue = new Queue<int>();
             random = new Random();
+            canSwitch = true;
 
             GeneratePieceQueue();
 
@@ -102,6 +103,34 @@ namespace Assets.Scripts
             SetPhantomPiece();
         }
 
+        public void SwitchPiece()
+        {
+            if (canSwitch)
+            {
+                canSwitch = false;
+
+                switchPiece ??= Tetrominoe.GetTetrominoe(pieceQueue.Dequeue());
+
+                if (pieceQueue.Count == 0)
+                {
+                    GeneratePieceQueue();
+                }
+
+                int[][] tempShape = switchPiece.Shape;
+                switchPiece.Shape = currentPiece.Shape;
+                switchPiece.Y = 0;
+                switchPiece.X = 3;
+                if (ValidPosition(switchPiece))
+                {
+                    currentPiece.Shape = tempShape;
+                    currentPiece.X = switchPiece.X;
+                    currentPiece.Y = switchPiece.Y;
+                    phantomPiece.Shape = tempShape;
+                    SetPhantomPiece();
+                }
+            }
+        }
+
         public void HardDrop()
         {
             while (ValidPosition(currentPiece))
@@ -152,6 +181,7 @@ namespace Assets.Scripts
         {
             FreezeBoard();
             PieceLocked = true;
+            canSwitch = true;
 
             int currentPieceIndex = pieceQueue.Dequeue();
 
@@ -292,27 +322,34 @@ namespace Assets.Scripts
 
         private bool ValidPosition(Tetrominoe piece)
         {
-            for (int y = 0; y < piece.Shape.Length; y++)
+            try
             {
-                for (int x = 0; x < piece.Shape[y].Length; x++)
+                for (int y = 0; y < piece.Shape.Length; y++)
                 {
-                    if (piece.Shape[y][x] != 0)
+                    for (int x = 0; x < piece.Shape[y].Length; x++)
                     {
-                        if (x + piece.X < 0 || x + piece.X >= Columns)
+                        if (piece.Shape[y][x] != 0)
                         {
-                            return false;
-                        }
+                            if (x + piece.X < 0 || x + piece.X >= Columns)
+                            {
+                                return false;
+                            }
 
-                        if (y + piece.Y >= Rows || Positions[y + piece.Y][x + piece.X] != 0)
-                        {
-                            piece.Active = false;
-                            return false;
+                            if (y + piece.Y >= Rows || Positions[y + piece.Y][x + piece.X] != 0)
+                            {
+                                piece.Active = false;
+                                return false;
+                            }
                         }
                     }
                 }
-            }
 
-            return true;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

@@ -81,6 +81,22 @@ public class GLBehaviour : MonoBehaviour
             }
         }
 
+        Tetrominoe switchPiece = tetrisController.board.switchPiece;
+        if(switchPiece != null)
+        {
+            for (int y = 0; y < switchPiece.Shape.Length; y++)
+            {
+                for (int x = 0; x < switchPiece.Shape[y].Length; x++)
+                {
+                    if (switchPiece.Shape[y][x] != 0)
+                    {
+                        GL.Color(colors[switchPiece.Shape[y][x]]);
+                        DrawSquare(x + (int)nextPiecePosition.x, tetrisController.board.Rows - (int)nextPiecePosition.y - y - 5);
+                    }
+                }
+            }
+        }
+
         GL.End();
     }
 

@@ -6,6 +6,7 @@
         public int Y;
         public int[][] Shape;
         public bool Active;
+        public int Index;
 
         private static int[][] shapeI =
         {
@@ -69,15 +70,16 @@
 
         public static Tetrominoe GetTetrominoe(int index)
         {
-            return new Tetrominoe(Shapes[index]);
+            return new Tetrominoe(Shapes[index], index);
         }
 
-        private Tetrominoe(int[][] shape)
+        private Tetrominoe(int[][] shape, int index)
         {
             Active = true;
             Shape = shape;
             X = 3;
             Y = 0;
+            Index = index;
         }
     }
 }
