@@ -89,7 +89,7 @@ namespace Assets.Scripts
             currentPiece.X += x;
             currentPiece.Y += y;
 
-            if (!ValidPosition(currentPiece))
+            if (!ValidPosition(currentPiece, (x != 0 && y == 0)))
             {
                 currentPiece.X -= x;
                 currentPiece.Y -= y;
@@ -320,7 +320,7 @@ namespace Assets.Scripts
             }
         }
 
-        private bool ValidPosition(Tetrominoe piece)
+        private bool ValidPosition(Tetrominoe piece, bool horizontalMovement = false)
         {
             try
             {
@@ -337,7 +337,7 @@ namespace Assets.Scripts
 
                             if (y + piece.Y >= Rows || Positions[y + piece.Y][x + piece.X] != 0)
                             {
-                                piece.Active = false;
+                                piece.Active = horizontalMovement;
                                 return false;
                             }
                         }
