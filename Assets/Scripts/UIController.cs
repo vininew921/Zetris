@@ -4,19 +4,22 @@ using UnityEngine.UI;
 
 public class UIController : MonoBehaviour
 {
-    public GameObject mainPanel;
+    public GameObject pointsPanel;
+    public GameObject controlsPanel;
     public GameObject nicknamePanel;
     public InputField nicknameInput;
 
     public void Start()
     {
-        mainPanel.SetActive(false);
+        pointsPanel.SetActive(false);
+        controlsPanel.SetActive(false);
         nicknamePanel.SetActive(true);
     }
 
     public void StartGame()
     {
-        mainPanel.SetActive(true);
+        pointsPanel.SetActive(true);
+        controlsPanel.SetActive(true);
         nicknamePanel.SetActive(false);
     }
 
